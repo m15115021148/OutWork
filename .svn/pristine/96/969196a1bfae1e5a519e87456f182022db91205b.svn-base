@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_my_self"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/task_bg"
+    tools:context="com.sitemap.nanchang.activity.MySelfActivity">
+
+    <include
+        android:id="@+id/include_title"
+        layout="@layout/include_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_40px_in720p"
+                android:padding="@dimen/_20px_in720p"
+                android:text="个人信息"
+                android:textColor="@color/task_txt"
+                android:textSize="@dimen/_30px_in720p" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/write"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/my_self_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_90px_in720p">
+
+                    <TextView
+                        style="@style/TaskTextStyle"
+                        android:text="用户名"
+                        />
+
+                    <TextView
+                        android:id="@+id/name"
+                        style="@style/TaskTextResultStyle"
+                        android:layout_marginRight="@dimen/_20px_in720p"
+                        />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_2px_in720p"
+                    android:layout_marginLeft="@dimen/_20px_in720p"
+                    android:layout_marginRight="@dimen/_20px_in720p"
+                    android:background="@color/title_gray" />
+
+                <RelativeLayout
+                    android:id="@+id/my_self_psw"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_90px_in720p">
+
+                    <TextView
+                        style="@style/TaskTextStyle"
+                        android:text="登录密码" />
+
+                    <TextView
+                        android:id="@+id/psw"
+                        style="@style/TaskTextResultStyle"
+                        android:hint="修改密码"
+                        android:textSize="@dimen/_28px_in720p"/>
+
+                    <ImageView style="@style/TaskImageStyle" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_40px_in720p"
+                android:padding="@dimen/_20px_in720p"
+                android:text="本地文件"
+                android:textColor="@color/task_txt"
+                android:textSize="@dimen/_30px_in720p" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/write"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/my_self_zipPath"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_90px_in720p">
+
+                    <TextView
+                        style="@style/TaskTextStyle"
+                        android:text="压缩文件路径" />
+
+                    <TextView
+                        android:id="@+id/zipPath"
+                        style="@style/TaskTextResultStyle"
+                        android:layout_marginRight="@dimen/_20px_in720p"
+                        android:textSize="@dimen/_20px_in720p"/>
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_2px_in720p"
+                    android:layout_marginLeft="@dimen/_20px_in720p"
+                    android:layout_marginRight="@dimen/_20px_in720p"
+                    android:background="@color/title_gray" />
+
+                <RelativeLayout
+                    android:id="@+id/my_self_filePath"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_90px_in720p">
+
+                    <TextView
+                        style="@style/TaskTextStyle"
+                        android:text="文件存储路径" />
+
+                    <TextView
+                        android:id="@+id/appPath"
+                        style="@style/TaskTextResultStyle"
+                        android:layout_marginRight="@dimen/_20px_in720p"
+                        android:textSize="@dimen/_20px_in720p"/>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <!--提交-->
+            <TextView
+                android:id="@+id/exit"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_90px_in720p"
+                android:layout_marginTop="@dimen/_80px_in720p"
+                android:background="@color/write"
+                android:gravity="center"
+                android:text="安全退出"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/_35px_in720p" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_100px_in720p"/>
+
+        </LinearLayout>
+
+
+
+    </ScrollView>
+
+</LinearLayout>

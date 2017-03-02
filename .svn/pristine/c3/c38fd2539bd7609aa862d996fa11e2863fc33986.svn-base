@@ -1,0 +1,200 @@
+package com.sitemap.nanchang.fragments;
+
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Gallery;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.sitemap.nanchang.R;
+import com.sitemap.nanchang.activity.PatchDesActivity;
+import com.sitemap.nanchang.adapter.PatchListViewAdapter;
+import com.sitemap.nanchang.application.MyApplication;
+import com.sitemap.nanchang.config.RequestCode;
+import com.sitemap.nanchang.model.PatchModel;
+import com.sitemap.nanchang.model.TaskPathModel;
+import com.sitemap.nanchang.util.DialogUtil;
+import com.sitemap.nanchang.util.FileUtil;
+import com.sitemap.nanchang.util.ParserUtil;
+import com.sitemap.nanchang.util.ToastUtil;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @desc 采集点 页面
+ * Created by chenmeng on 2016/12/9.
+ */
+public class PatchFragment extends Fragment implements PatchListViewAdapter.OnClickPatchUpLoading {
+    private View view;//视图
+    private Context mContext;//本类
+    private ListView listView;//listview
+    private PatchListViewAdapter adapter;
+    private List<PatchModel> lTask = new ArrayList<PatchModel>();
+    private List<TaskPathModel> lIsZip = new ArrayList<TaskPathModel>();
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_patch, null);
+        }
+        mContext = inflater.getContext();
+        listView = (ListView) view.findViewById(R.id.patch_list);
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        File appFilePath = FileUtil.createFolder(MyApplication.appRootPath);
+        if (appFilePath.exists()) {
+            File upLoadFile = FileUtil.createOneFolder(appFilePath, RequestCode.GATHER);
+            File tempFile = FileUtil.createOneFolder(appFilePath, RequestCode.TEMP_GATHER);
+            if (upLoadFile.exists()) {//uuid
+                File userUuidFile = FileUtil.createOneFolder(upLoadFile, MyApplication.uuid);
+                if (userUuidFile.exists()) {//创建gather目录 多个
+                    lTask.clear();
+                    lIsZip.clear();
+                    for (int i = 0; i < userUuidFile.listFiles().length; i++) {
+                        if (!userUuidFile.listFiles()[i].isFile()) {
+                            String number = userUuidFile.listFiles()[i].getName();
+                            File numberFile = FileUtil.createOneFolder(userUuidFile, number);
+                            File userTextFile = FileUtil.createOneFolder(numberFile, RequestCode.TEXT);
+                            TaskPathModel tpm = new TaskPathModel();
+                            tpm.setUpload("0");
+                            tpm.setSrcZipPath(userUuidFile.getPath());
+                            tpm.setProjectName(number);
+                            tpm.setProjectPath(numberFile.getPath());
+                            if (userTextFile.exists()) {
+                                String text = FileUtil.readFilePath(userTextFile.getPath(), RequestCode.GATHERNAME);
+                                if (text != null) {
+                                    PatchModel tm = (PatchModel) ParserUtil.jsonToObject(text, PatchModel.class);
+                                    lTask.add(tm);
+                                    tpm.setTextPath(userTextFile.getPath());
+                                    tpm.setIsZip("0");
+                                }
+
+                            }
+                            File userImgFile = FileUtil.createOneFolder(numberFile, RequestCode.IMG);
+                            if (userImgFile.exists()) {
+                                if (userImgFile.listFiles().length > 0) {
+                                    if (userImgFile.listFiles()[0].getName().contains(".jpg")) {
+                                        tpm.setJpgImgPath(userImgFile.listFiles()[0].getPath());
+                                    }
+                                }
+                                tpm.setImgPath(userImgFile.getPath());
+                            }
+                            File userVoiceFile = FileUtil.createOneFolder(numberFile, RequestCode.VOICE);
+                            if (userVoiceFile.exists()) {
+                                tpm.setVoicePath(userVoiceFile.getPath());
+                            }
+                            File userVideoFile = FileUtil.createOneFolder(numberFile, RequestCode.VIDEO);
+                            if (userVideoFile.exists()) {
+                                tpm.setVideoPath(userVideoFile.getPath());
+                            }
+                            lIsZip.add(tpm);
+                        }
+                    }
+
+                }
+            }
+            if (tempFile.exists()) {
+//                if (tempFile.listFiles().length>0) {
+                for (int i = 0; i < tempFile.listFiles().length; i++) {
+                    if (tempFile.listFiles()[i].getName().contains(".zip")) {
+                        for (int j = 0; j < lTask.size(); j++) {
+                            String number = tempFile.listFiles()[i].getName().split("_")[2];
+                            if ((lIsZip.get(j).getProjectName().split("_")[1]+".zip").equals(number)) {//通过时间来判断唯一性
+                                lIsZip.get(j).setIsZip("1");
+                                lIsZip.get(j).setZipPath(tempFile.listFiles()[i].getPath());
+                            }
+                        }
+                    }
+//                    }
+                }
+            }
+            iniListViewData();
+        } else {
+        }
+        super.onResume();
+    }
+
+    /**
+     * 初始化listview
+     */
+    private void iniListViewData() {
+        adapter = new PatchListViewAdapter(mContext, lTask, lIsZip, this);
+        TextView emptyView = new TextView(mContext);
+        emptyView.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.FILL_PARENT, Gallery.LayoutParams.FILL_PARENT));
+        emptyView.setText("暂无采集信息！");
+        emptyView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
+        emptyView.setVisibility(View.GONE);
+        ((ViewGroup) listView.getParent()).addView(emptyView);
+        listView.setEmptyView(emptyView);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(mContext, PatchDesActivity.class);
+                intent.putExtra("type", 2);//you压缩按钮
+                Bundle b = new Bundle();
+                b.putSerializable("PatchModel", lTask.get(position));
+                b.putSerializable("TaskPathModel", lIsZip.get(position));
+                intent.putExtras(b);
+                startActivity(intent);
+            }
+        });
+
+    }
+
+    /**
+     * 上传
+     * @param pos
+     */
+    @Override
+    public void onClickUpLoading(final int pos,int type) {
+//        handler.sendEmptyMessage(0);
+
+        if (type == 1) {
+            if(  lIsZip.get(pos).getIsZip().equals("1")){
+                lIsZip.get(pos).setUpload("1");
+                adapter.notifyDataSetChanged();
+                new Handler().postDelayed(new Runnable() {
+                    //
+                    public void run() {
+                        lIsZip.get(pos).setUpload("0");
+                        ToastUtil.showBottomShort(mContext, "上传成功！");
+                        adapter.notifyDataSetChanged();
+                    }
+                }, 3000);
+            }else {
+                ToastUtil.showCenterShort(mContext,"该采集点尚未完成！");
+            }
+
+        } else if (type==2) {
+            View viewDialog = DialogUtil.customPromptDialog(mContext, "确定", "取消",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            FileUtil.deleteFolder(new File(lIsZip.get(pos).getProjectPath()));
+                            onResume();
+                            ToastUtil.showBottomShort(mContext,"删除成功");
+                        }
+                    }, null);
+            TextView tv = (TextView) viewDialog.findViewById(R.id.dialog_tv_txt);
+            tv.setText("确定删除吗?");
+        }
+    }
+}

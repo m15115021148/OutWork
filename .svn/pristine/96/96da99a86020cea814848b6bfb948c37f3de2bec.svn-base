@@ -1,0 +1,114 @@
+package com.sitemap.nanchang.adapter;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.sitemap.nanchang.R;
+import com.sitemap.nanchang.model.PatchModel;
+import com.sitemap.nanchang.model.TaskModel;
+import com.sitemap.nanchang.model.TaskPathModel;
+import com.sitemap.nanchang.util.HttpImageUtil;
+
+import java.util.List;
+
+/**
+ * @dese 采集点适配器
+ * Created by zf on 2016/12/2
+ */
+
+public class PatchListViewAdapter extends BaseAdapter {
+    private Context mContext;
+    private List<PatchModel> mList;
+    private List<TaskPathModel> isZip;
+    private Holder holder;
+
+    public void setCallBack(OnClickPatchUpLoading callBack) {
+        this.callBack = callBack;
+    }
+
+    private OnClickPatchUpLoading callBack;
+
+    public interface OnClickPatchUpLoading{
+        void onClickUpLoading(int pos);
+    }
+
+
+    public PatchListViewAdapter(Context context, List<PatchModel> list, List<TaskPathModel> isZip, OnClickPatchUpLoading callBack) {
+        this.mContext = context;
+        this.mList = list;
+        this.isZip=isZip;
+        this.callBack = callBack;
+    }
+
+    @Override
+    public int getCount() {
+        return mList.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return mList.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.patch_list_view_item, null);
+            holder = new Holder();
+            holder.task_image = (ImageView) convertView.findViewById(R.id.task_image);
+            holder.name = (TextView) convertView.findViewById(R.id.name);
+//            holder.isZip = (TextView) convertView.findViewById(R.id.isZip);
+            holder.upText = (TextView) convertView.findViewById(R.id.up_loading_text);
+            holder.address = (TextView) convertView.findViewById(R.id.address);
+            holder.time = (TextView) convertView.findViewById(R.id.time);
+            holder.upLoading = (ImageView) convertView.findViewById(R.id.upLoading);
+            convertView.setTag(holder);
+
+        } else {
+            holder = (Holder) convertView.getTag();
+        }
+         holder.name.setText(mList.get(position).getName());
+//        holder.bianhao.setText("任务编号："+mList.get(position).getTaskNumber());
+//        holder.danwei.setText(mList.get(position).getCompany());
+        holder.upText.setText(mList.get(position).getUploadText());
+        holder.address.setText(mList.get(position).getAddress());
+        holder.time.setText(mList.get(position).getTime());
+//        if (isZip.get(position).getJpgImgPath()!=null&&!isZip.get(position).getJpgImgPath().equals("")){
+            HttpImageUtil.loadImage(holder.task_image,isZip.get(position).getJpgImgPath());
+//        }
+
+        if (isZip.get(position).getIsZip().equals("1")){
+//            holder.isZip.setText("已打包");
+            holder.upLoading.setVisibility(View.VISIBLE);
+        }else {
+//            holder.isZip.setText("");
+            holder.upLoading.setVisibility(View.GONE);
+        }
+        final int pos = position;
+        holder.upLoading.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (callBack!=null){
+                    callBack.onClickUpLoading(pos);
+                }
+            }
+        });
+
+        return convertView;
+    }
+
+    private class Holder {
+        ImageView task_image,upLoading;
+        TextView name,isZip,upText,address,time;
+    }
+}

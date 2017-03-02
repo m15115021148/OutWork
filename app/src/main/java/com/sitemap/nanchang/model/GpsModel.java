@@ -1,0 +1,44 @@
+package com.sitemap.nanchang.model;
+
+/**
+ * Created by Administrator on 2016/12/2.
+ */
+
+public class GpsModel {
+    private String lng;//      经度
+    private String lat;//      纬度
+    private String time;//    时间
+    private String des;//描述
+
+    public String getDes() {
+        return des;
+    }
+
+    public void setDes(String des) {
+        this.des = des;
+    }
+
+    public String getLng() {
+        return lng;
+    }
+
+    public void setLng(String lng) {
+        this.lng = lng;
+    }
+
+    public String getLat() {
+        return lat;
+    }
+
+    public void setLat(String lat) {
+        this.lat = lat;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+}

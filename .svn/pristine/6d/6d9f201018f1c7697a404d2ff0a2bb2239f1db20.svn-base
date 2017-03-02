@@ -1,0 +1,110 @@
+package com.sitemap.nanchang.model;
+
+import java.io.Serializable;
+
+/**
+ * @desc 采集点 实体类
+ * Created by chenmeng on 2016/12/9.
+ */
+
+public class PatchModel implements Serializable{
+    private String uuid;
+    private String name;
+    private String lng;
+    private String lat;
+    private String address;
+    private String uploadText;
+    private String time;
+    private String linkPhone;
+    private String linkMan;
+    private String note;
+    private String imgPath;//图片路径
+
+    public String getImgPath() {
+        return imgPath;
+    }
+
+    public void setImgPath(String imgPath) {
+        this.imgPath = imgPath;
+    }
+
+    public String getLinkPhone() {
+        return linkPhone;
+    }
+
+    public void setLinkPhone(String linkPhone) {
+        this.linkPhone = linkPhone;
+    }
+
+    public String getLinkman() {
+        return linkMan;
+    }
+
+    public void setLinkman(String linkman) {
+        this.linkMan = linkman;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLng() {
+        return lng;
+    }
+
+    public void setLng(String lng) {
+        this.lng = lng;
+    }
+
+    public String getLat() {
+        return lat;
+    }
+
+    public void setLat(String lat) {
+        this.lat = lat;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getUploadText() {
+        return uploadText;
+    }
+
+    public void setUploadText(String uploadText) {
+        this.uploadText = uploadText;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+}

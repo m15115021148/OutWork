@@ -1,0 +1,83 @@
+package com.sitemap.nanchang.model;
+
+import java.io.Serializable;
+
+/**
+ * @desc 采集点 实体类
+ * Created by chenmeng on 2016/12/9.
+ */
+
+public class PatchModel implements Serializable{
+    private String uuid;
+    private String name;
+    private String lng;
+    private String lat;
+    private String address;
+    private String uploadText;
+    private String time;
+    private String number;
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLng() {
+        return lng;
+    }
+
+    public void setLng(String lng) {
+        this.lng = lng;
+    }
+
+    public String getLat() {
+        return lat;
+    }
+
+    public void setLat(String lat) {
+        this.lat = lat;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getUploadText() {
+        return uploadText;
+    }
+
+    public void setUploadText(String uploadText) {
+        this.uploadText = uploadText;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+}

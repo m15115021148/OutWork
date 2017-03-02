@@ -1,0 +1,266 @@
+package com.sitemap.nanchang.activity;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.sitemap.nanchang.R;
+import com.sitemap.nanchang.adapter.ImageGridViewAdapter;
+import com.sitemap.nanchang.model.DataType;
+import com.sitemap.nanchang.model.DesPathModel;
+import com.sitemap.nanchang.model.GpsModel;
+import com.sitemap.nanchang.model.PathModel;
+import com.sitemap.nanchang.util.DateUtil;
+import com.sitemap.nanchang.util.FileNames;
+import com.sitemap.nanchang.util.FileUtil;
+import com.sitemap.nanchang.util.MediaUtil;
+import com.sitemap.nanchang.util.ParserUtil;
+
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author will created by 2016/11/30
+ * @desc 视频的展示 、选中
+ */
+public class VideoSelectActivity extends BaseActivity implements View.OnClickListener {
+    private VideoSelectActivity mContext;//本类
+    private LinearLayout mBack, mSelect;//返回 选择
+    private TextView mTitle, mMoreTitle;//标题 右侧标题
+    private GridView mGv;//GridView
+    private TextView mDel;//删除
+    private ImageGridViewAdapter adapter;//适配器
+    private List<PathModel> mList;
+    public final int TAKE_PICTURE = 0;
+    private String VIDEO_PAHT = "";//视频文件夹
+    private double lat;//纬度
+    private double lng;//经度
+    private List<DesPathModel> mDesList;//描述路径 集合
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_image_select);
+        mContext = this;
+        initView();
+        initGridViewData();
+    }
+
+
+    /**
+     * 初始化数据GridView
+     */
+    private void initGridViewData() {
+        mList = new ArrayList<PathModel>();
+        mDesList = new ArrayList<>();
+        VIDEO_PAHT = getIntent().getStringExtra("videoPath");
+        adapter = new ImageGridViewAdapter(this, mList, DataType.VIDEO);
+        initImg(VIDEO_PAHT);
+        mGv.setAdapter(adapter);
+        mGv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {//增加图片
+                    openCamera();
+                } else {
+                    if (adapter.isShow()) {
+                        ImageView sel = (ImageView) view.findViewById(R.id.sel);
+                        boolean isSelected = mList.get(position).isSelected();
+                        if (isSelected) {
+                            mList.get(position).setSelected(false);
+                            sel.setSelected(false);
+                        } else {
+                            mList.get(position).setSelected(true);
+                            sel.setSelected(true);
+                        }
+                    }else {
+                        MediaUtil.openMedia(mContext,mList.get(position).getPath(),DataType.VIDEO);
+                    }
+                }
+
+            }
+        });
+    }
+
+    /**
+     * 初始化view
+     */
+    private void initView() {
+        mBack = (LinearLayout) findViewById(R.id.include_title).findViewById(R.id.back);
+        mBack.setOnClickListener(this);
+        mTitle = (TextView) findViewById(R.id.include_title).findViewById(R.id.title);
+        mTitle.setText("视频");
+        mSelect = (LinearLayout) findViewById(R.id.include_title).findViewById(R.id.more);
+        mSelect.setOnClickListener(this);
+        mSelect.setSelected(true);
+        mMoreTitle = (TextView) findViewById(R.id.include_title).findViewById(R.id.more_title);
+        mMoreTitle.setText("选择");
+        mMoreTitle.setVisibility(View.VISIBLE);
+        mGv = (GridView) findViewById(R.id.image_select_gv);
+        mDel = (TextView) findViewById(R.id.image_select_del);
+        mDel.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == mBack) {//返回按钮
+            mContext.finish();
+        }
+        if (v == mSelect) {//选择按钮
+            if (mSelect.isSelected()) {
+                mMoreTitle.setText("取消");
+                mSelect.setSelected(false);
+
+//                将数据被选择的状态重置
+                for (PathModel model : mList) {
+                    model.setSelected(false);
+                }
+//                更新界面
+                if (adapter != null) {
+                    adapter.setShow(true);
+                    adapter.notifyDataSetChanged();
+                }
+            } else {
+                mMoreTitle.setText("选择");
+                mSelect.setSelected(true);
+                if (adapter != null) {
+                    adapter.setShow(false);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+        }
+        if (v == mDel) {//删除按钮
+            deleteImg(mList);
+        }
+    }
+
+    /**
+     * 获取视频文件夹下的所有视频
+     *
+     * @param imgFilePath
+     */
+    private void initImg(String imgFilePath) {
+        //        加入一个空对象
+        PathModel addModel = new PathModel();
+        mList.add(addModel);
+        List<String> list = FileUtil.getListFiles(new File(VIDEO_PAHT));
+        if (list == null) {
+            return;
+        }
+        for (String path : list) {
+            if (!TextUtils.isEmpty(path)) {
+                if (path.contains(".mp4")){
+                    PathModel model = new PathModel();
+                    model.setPath(path);
+                    mList.add(model);
+                }
+                if (path.contains(".txt")){
+                    DesPathModel desModel = new DesPathModel();
+                    desModel.setDesPath(path);
+                    mDesList.add(desModel);
+                }
+            }
+        }
+    }
+
+    /**
+     * 删除视频
+     *
+     * @param mList
+     */
+    private void deleteImg(List<PathModel> mList) {
+        if (mList == null) {
+            return;
+        }
+//        删除文件
+        for (int i = 0; i < mList.size(); i++) {
+            boolean isSelected = mList.get(i).isSelected();
+            if (isSelected) {
+                String path = mList.get(i).getPath();
+                for (int j=0;j<mDesList.size();j++){
+                    if (path.equals(mDesList.get(j).getDesPath().replace(".txt",".mp4"))){
+                        FileUtil.deleteFilePath(mDesList.get(j).getDesPath());
+                    }
+                }
+                if (!TextUtils.isEmpty(path)) {
+                    FileUtil.deleteFilePath(path);
+                }
+                mList.remove(i);
+                i--;
+            }
+        }
+
+        adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 打开摄像头
+     */
+    private void openCamera() {
+        // 调用android自带的摄像头
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+//        // 设置视频大小
+//        intent.putExtra(android.provider.MediaStore.EXTRA_SIZE_LIMIT,768000);
+//
+//        // 设置视频时间 毫秒单位
+//        intent.putExtra(android.provider.MediaStore.EXTRA_DURATION_LIMIT, 45000);
+        startActivityForResult(intent, TAKE_PICTURE);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+       if (requestCode == TAKE_PICTURE && resultCode == Activity.RESULT_OK) {
+            String path = "";
+            if (data != null) {
+                Uri uriVideo = data.getData();
+                path=MediaUtil.UriToPath(this,uriVideo,DataType.VIDEO);
+            }
+            if (TextUtils.isEmpty(path)) {
+                return;
+            } else {
+                //                重命名
+                FileNames name = new FileNames();
+                String imgName = name.getVideoName();
+                String newFile = VIDEO_PAHT + "/" + imgName;
+                boolean isSuccess = false;
+                try {
+                    //                    拷贝
+                    isSuccess = FileUtil.copyFileTo(new File(path), new File(newFile));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                if (isSuccess) {
+                    GpsModel gpsModel=new GpsModel();
+                    gpsModel.setLat(String.valueOf(lat));
+                    gpsModel.setLng(String.valueOf(lng));
+                    gpsModel.setTime(DateUtil.getCurrentDate());
+                    File gpsFile=new File(VIDEO_PAHT);
+                    FileUtil.saveFilePath(gpsFile, imgName.replace(".mp4",".txt"), ParserUtil.objectToJson(gpsModel),false);
+                    PathModel model = new PathModel();
+                    model.setPath(newFile);
+                    mList.add(model);
+                    adapter.notifyDataSetChanged();
+                } else {
+                }
+
+            }
+
+        }
+    }
+}

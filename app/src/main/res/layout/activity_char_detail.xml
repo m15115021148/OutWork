@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_char_detail"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/task_bg"
+    android:orientation="vertical"
+    tools:context="com.sitemap.nanchang.activity.CharDetailActivity">
+
+    <include
+        android:id="@+id/include_title"
+        layout="@layout/include_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/char_detail"
+        style="?android:attr/textViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top"
+        android:hint="输入文字，点击返回即保存"
+        android:background="@null"
+        android:inputType="textMultiLine"
+        android:maxEms="@android:integer/status_bar_notification_info_maxnum"
+        android:padding="@dimen/_20px_in720p"
+        android:textSize="@dimen/_35px_in720p" />
+
+</LinearLayout>

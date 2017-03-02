@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/task_bg"
+    android:orientation="vertical"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_90px_in720p"
+        android:background="#f6f7f9">
+
+
+        <LinearLayout
+            android:id="@+id/menu"
+            android:layout_width="@dimen/_100px_in720p"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="@dimen/_40px_in720p"
+                android:layout_height="@dimen/_40px_in720p"
+                android:background="@drawable/mian_menu" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/renwu"
+                android:layout_width="@dimen/_120px_in720p"
+                android:layout_height="@dimen/_60px_in720p"
+                android:singleLine="true"
+                android:text="任务"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:background="@drawable/viewpager_rw_bg"
+                android:textSize="@dimen/_30px_in720p" />
+
+            <TextView
+                android:id="@+id/map"
+                android:layout_width="@dimen/_120px_in720p"
+                android:layout_height="@dimen/_60px_in720p"
+                android:singleLine="true"
+                android:text="采集点"
+                android:gravity="center"
+                android:textColor="#333333"
+                android:background="@drawable/viewpager_ditu_bg"
+                android:textSize="@dimen/_30px_in720p" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/add_task"
+            android:layout_width="@dimen/_100px_in720p"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:layout_width="@dimen/_40px_in720p"
+                android:layout_height="@dimen/_40px_in720p"
+                android:background="@drawable/add_task"
+                />
+
+        </LinearLayout>
+        <View
+            android:layout_alignParentBottom="true"
+            android:background="@color/gray"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_2px_in720p"/>
+    </RelativeLayout>
+
+    <com.sitemap.nanchang.view.NoScrollViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </com.sitemap.nanchang.view.NoScrollViewPager>
+</LinearLayout>

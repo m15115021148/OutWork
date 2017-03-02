@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="title_gray">#F6F7F9</color>
+    <color name="back">#000</color>
+
+    <color name="task_bg">#F0EFF5</color>
+    <color name="task_txt">#999999</color>
+    <color name="write">#fff</color>
+    <color name="title_back_color">#0079FE</color>
+</resources>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_image_select"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/task_bg"
+    tools:context="com.sitemap.nanchang.activity.ImageSelectActivity">
+
+    <include
+        android:id="@+id/include_title"
+        layout="@layout/include_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/image_select_del"
+            android:gravity="center"
+            android:textColor="@color/red"
+            android:textSize="@dimen/_35px_in720p"
+            android:text="删除"
+            android:layout_alignParentBottom="true"
+            android:background="@color/task_txt"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_90px_in720p" />
+
+        <GridView
+            android:scrollbars="none"
+            android:id="@+id/image_select_gv"
+            android:numColumns="4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/_100px_in720p"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

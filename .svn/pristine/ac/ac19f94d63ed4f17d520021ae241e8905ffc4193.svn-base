@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_task_desc"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/task_bg"
+    android:orientation="vertical"
+    tools:context="com.sitemap.nanchang.activity.TaskDescActivity">
+
+    <!--标题-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_90px_in720p"
+        android:background="@color/title_gray">
+
+        <LinearLayout
+            android:id="@+id/task_back"
+            android:layout_width="@dimen/_150px_in720p"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/_25px_in720p"
+                android:layout_height="@dimen/_30px_in720p"
+                android:background="@drawable/index_back" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_5px_in720p"
+                android:text="返回"
+                android:textColor="@color/title_back_color"
+                android:textSize="@dimen/_35px_in720p" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="任务详情"
+            android:textColor="@color/back"
+            android:textSize="@dimen/_35px_in720p" />
+
+        <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/task_edit"
+            android:layout_width="@dimen/_150px_in720p"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:id="@+id/reduce"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="压缩"
+                android:textColor="@color/title_back_color"
+                android:textSize="@dimen/_35px_in720p" />
+
+        </RelativeLayout>
+        <View
+            android:layout_alignParentBottom="true"
+            android:background="@color/gray"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_2px_in720p"/>
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <!--删除压缩文件-->
+            <RelativeLayout
+                android:id="@+id/re_zip"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_90px_in720p"
+                android:layout_marginTop="@dimen/_40px_in720p"
+                android:background="@color/white"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/img"
+                    android:layout_width="@dimen/_50px_in720p"
+                    android:layout_height="@dimen/_50px_in720p"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/_20px_in720p"
+                    android:background="@drawable/zip_logo" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/_20px_in720p"
+                    android:layout_toRightOf="@+id/img"
+                    android:text="该任务已压缩"
+                    android:textColor="@color/task_txt"
+                    android:textSize="@dimen/_30px_in720p" />
+
+                <TextView
+                    android:id="@+id/zip_del"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/_20px_in720p"
+                    android:gravity="right"
+                    android:text="删除压缩包"
+                    android:textColor="@color/title_back_color"
+                    android:textSize="@dimen/_30px_in720p" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_40px_in720p"
+                android:padding="@dimen/_20px_in720p"
+                android:text="基本信息"
+                android:textColor="@color/task_txt"
+                android:textSize="@dimen/_30px_in720p" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/write"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/re_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_90px_in720p">
+
+                    <TextView
+                        style="@style/TaskTextStyle"
+                        android:text="名称" />
+
+                    <TextView
+                        android:id="@+id/task_name"
+                        style="@style/TaskTextResultStyle" />
+
+                    <ImageView style="@style/TaskImageStyle" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_2px_in720p"
+                    android:layout_marginLeft="@dimen/_20px_in720p"
+                    android:layout_marginRight="@dimen/_20px_in720p"
+                    android:background="@color/title_gray" />
+
+                <RelativeLayout
+                    android:id="@+id/re_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_90px_in720p">
+
+                    <TextView
+                        style="@style/TaskTextStyle"
+                        android:text="编号" />
+
+                    <TextView
+                        android:id="@+id/task_number"
+                        style="@style/TaskTextResultStyle" />
+
+                    <ImageView style="@style/TaskImageStyle" />
+
+                </RelativeLayout>
+
+                <View
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_2px_in720p"
+                    android:layout_marginLeft="@dimen/_20px_in720p"
+                    android:layout_marginRight="@dimen/_20px_in720p"
+                    android:background="@color/title_gray" />
+
+                <RelativeLayout
+                    android:visibility="gone"
+                    android:id="@+id/re_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_90px_in720p">
+
+                    <TextView
+                        style="@style/TaskTextStyle"
+                        android:text="地点" />
+
+                    <TextView
+                        android:id="@+id/task_address"
+                        style="@style/TaskTextResultStyle" />
+
+                    <ImageView style="@style/TaskImageStyle" />
+
+                </RelativeLayout>
+
+                <View
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_2px_in720p"
+                    android:layout_marginLeft="@dimen/_20px_in720p"
+                    android:layout_marginRight="@dimen/_20px_in720p"
+                    android:background="@color/title_gray" />
+
+                <RelativeLayout
+                    android:visibility="gone"
+                    android:id="@+id/re_company"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_90px_in720p">
+
+                    <TextView
+                        style="@style/TaskTextStyle"
+                        android:text="单位" />
+
+                    <TextView
+                        android:id="@+id/task_company"
+                        style="@style/TaskTextResultStyle" />
+
+                    <ImageView style="@style/TaskImageStyle" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_40px_in720p"
+                android:padding="@dimen/_20px_in720p"
+                android:text="上传信息"
+                android:textColor="@color/task_txt"
+                android:textSize="@dimen/_30px_in720p" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/write"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/re_char"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_90px_in720p">
+
+                    <TextView
+                        style="@style/TaskTextStyle"
+                        android:text="文字" />
+
+                    <TextView
+                        android:id="@+id/task_char"
+                        style="@style/TaskTextResultStyle" />
+
+                    <ImageView style="@style/TaskImageStyle" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_2px_in720p"
+                    android:layout_marginLeft="@dimen/_20px_in720p"
+                    android:layout_marginRight="@dimen/_20px_in720p"
+                    android:background="@color/title_gray" />
+
+                <RelativeLayout
+                    android:id="@+id/re_picture"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_90px_in720p">
+
+                    <TextView
+                        style="@style/TaskTextStyle"
+                        android:text="图片" />
+
+                    <ImageView
+                        android:id="@+id/task_picture"
+                        android:layout_width="@dimen/_60px_in720p"
+                        android:layout_height="@dimen/_60px_in720p"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="@dimen/_60px_in720p" />
+
+                    <ImageView style="@style/TaskImageStyle" />
+
+                </RelativeLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_2px_in720p"
+                    android:layout_marginLeft="@dimen/_20px_in720p"
+                    android:layout_marginRight="@dimen/_20px_in720p"
+                    android:background="@color/title_gray" />
+
+                <RelativeLayout
+                    android:id="@+id/re_voice"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_90px_in720p">
+
+                    <TextView
+                        style="@style/TaskTextStyle"
+                        android:text="音频" />
+
+                    <ImageView
+                        android:id="@+id/task_voice"
+                        android:layout_width="@dimen/_60px_in720p"
+                        android:layout_height="@dimen/_60px_in720p"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="@dimen/_60px_in720p" />
+
+                    <ImageView style="@style/TaskImageStyle" />
+
+                </RelativeLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_2px_in720p"
+                    android:layout_marginLeft="@dimen/_20px_in720p"
+                    android:layout_marginRight="@dimen/_20px_in720p"
+                    android:background="@color/title_gray" />
+
+                <RelativeLayout
+                    android:id="@+id/re_video"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_90px_in720p">
+
+                    <TextView
+                        style="@style/TaskTextStyle"
+                        android:text="视频" />
+
+                    <ImageView
+                        android:id="@+id/task_video"
+                        android:layout_width="@dimen/_60px_in720p"
+                        android:layout_height="@dimen/_60px_in720p"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="@dimen/_60px_in720p" />
+
+                    <ImageView style="@style/TaskImageStyle" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <!--提交-->
+            <TextView
+                android:id="@+id/task_submit"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_90px_in720p"
+                android:layout_marginTop="@dimen/_80px_in720p"
+                android:background="@color/write"
+                android:gravity="center"
+                android:text="提交"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/_35px_in720p" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_100px_in720p"/>
+
+        </LinearLayout>
+
+
+
+    </ScrollView>
+
+</LinearLayout>

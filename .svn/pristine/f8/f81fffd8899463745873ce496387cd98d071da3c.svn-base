@@ -1,0 +1,30 @@
+package com.sitemap.nanchang.config;
+
+/**
+ * @desc 文件名称的常量
+ * Created by chenmeng on 2016/12/1.
+ */
+
+public class RequestCode {
+    public static final String APPNAME = "stnanchang";//总的目录 一级目录
+    public static final String UPLOAD = "task";//二级目录  任务
+    public static final String GATHER = "gather";//二级目录  采集点
+    public static final String GPS = "gps";//四级目录: gps下创建下GPS文件
+    public static final String TEXT = "text";//六级目录： 三个文件夹，该文件夹下创建任务文件
+    public static final String IMG = "img";//六级目录：
+    public static final String VOICE = "voice";//六级目录：
+    public static final String VIDEO = "video";//六级目录：
+    public static final String TASKNAME = "task.txt";//任务文件名
+    public static final String GATHERNAME = "gather.txt";//采集点文件名
+    public static final String TASKDES = "des.txt";//text文件下的描述文件
+    public static final String TEMP_TASK = "专案任务";//任务压缩目录
+    public static final String TEMP_GATHER = "信息采集";//采集点压缩目录
+    public static final String PERSONS="persons.txt";//用户信息
+    public static final String DOWNLOAD="download";
+    public static final String GPSTXT="gps.txt";
+
+    public static final int CHARS = 0x001;//文字传值标致
+    public static final int NUMBER_PICTURE = 0x002;//文字传值标致
+    public static final int NUMBER_VIDEO = 0x003;//文字传值标致
+    public static final int NUMBER_VOICE = 0x004;//文字传值标致
+}

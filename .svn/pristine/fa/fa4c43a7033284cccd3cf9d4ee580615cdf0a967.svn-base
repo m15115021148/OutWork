@@ -1,0 +1,122 @@
+package com.sitemap.nanchang.activity;
+
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.sitemap.nanchang.R;
+import com.sitemap.nanchang.application.MyApplication;
+import com.sitemap.nanchang.config.RequestCode;
+import com.sitemap.nanchang.util.DialogUtil;
+import com.sitemap.nanchang.util.FileUtil;
+import com.sitemap.nanchang.util.ToastUtil;
+
+import java.io.File;
+
+/**
+ * @desc 我的页面
+ * @author chenmeng created by 2016/12/8
+ */
+public class MySelfActivity extends BaseActivity implements View.OnClickListener{
+    private MySelfActivity mContext;//本类
+    private LinearLayout mBack;//返回上一层
+    private TextView mTitle;//标题
+    private RelativeLayout mUserName,mUserPsw,mZipPath,mAppPath;//用户名  登录密码  压缩地址  存储地址
+    private TextView appPath;//存储地址
+    private TextView mExit;//安全退出
+    private View dailogView;//名称输入的viewdialog
+    private TextView name,zipPath;//用户名 压缩包目录
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_my_self);
+        mContext = this;
+        initView();
+        initData();
+    }
+
+    /**
+     * 初始化数据
+     */
+    private void initData() {
+        zipPath.setText(MyApplication.appRootPath+"/"+ RequestCode.TEMP_TASK);
+        appPath.setText(MyApplication.appRootPath);
+        name.setText(MyApplication.userName);
+    }
+
+    /**
+     * 初始化view
+     */
+    private void initView() {
+        mBack = (LinearLayout) findViewById(R.id.include_title).findViewById(R.id.back);
+        mBack.setOnClickListener(this);
+        mTitle = (TextView) findViewById(R.id.include_title).findViewById(R.id.title);
+        mTitle.setText("我的");
+        mUserName = (RelativeLayout) findViewById(R.id.my_self_name);
+        mUserName.setOnClickListener(this);
+        mUserPsw = (RelativeLayout) findViewById(R.id.my_self_psw);
+        mUserPsw.setOnClickListener(this);
+        mZipPath = (RelativeLayout) findViewById(R.id.my_self_zipPath);
+        mZipPath.setOnClickListener(this);
+        mAppPath = (RelativeLayout) findViewById(R.id.my_self_filePath);
+        mAppPath.setOnClickListener(this);
+        appPath = (TextView) findViewById(R.id.appPath);
+        zipPath = (TextView) findViewById(R.id.zipPath);
+        mExit = (TextView) findViewById(R.id.exit);
+        mExit.setOnClickListener(this);
+        name = (TextView) findViewById(R.id.name);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == mBack){
+            finish();
+        }
+        if (v == mUserName){
+//            dailogView = DialogUtil.customInputDialog(mContext, "确定", "取消",
+//                    new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            EditText text = (EditText) dailogView.findViewById(R.id.dialog_et_txt);
+//                            name.setText(text.getText().toString());
+//                        }
+//                    },
+//                    null);
+        }
+        if (v == mUserPsw){
+            Intent intent = new Intent(mContext,ChangePswActivity.class);
+            startActivity(intent);
+        }
+        if (v == mZipPath){
+//            String path = "/storage/sdcard1/stnanchang/temp/";
+//            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//            Intent intent = new Intent(Intent.ACTION_VIEW);
+//            intent.setData(Uri.parse(path));
+//            intent.setType("*/*");//设置类型，我这里是任意类型，任意后缀的可以这样写。
+//            intent.setDataAndType(Uri.fromFile(new File(path)), "*/*");  // 设置起始文件夹和文件类型
+//            intent.addCategory(Intent.CATEGORY_OPENABLE);
+//            startActivity(intent);
+        }
+        if (v == mExit){//安全退出
+
+            View viewDialog = DialogUtil.customPromptDialog(mContext, "确定", "取消",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(mContext,LoginActivity.class);
+                            intent.putExtra("type",1);
+                            startActivity(intent);
+                            FileUtil.deleteFolder(new File(MyApplication.appRootPath));
+                            finish();
+                        }
+                    }, null);
+            TextView tv = (TextView) viewDialog.findViewById(R.id.dialog_tv_txt);
+            tv.setText("确定要退出吗?");
+        }
+    }
+}

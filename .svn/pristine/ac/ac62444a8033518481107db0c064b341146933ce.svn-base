@@ -1,0 +1,83 @@
+package com.sitemap.nanchang.application;
+
+import android.Manifest;
+import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.util.Log;
+
+import com.baidu.mapapi.SDKInitializer;
+import com.sitemap.nanchang.config.RequestCode;
+import com.sitemap.nanchang.util.UuidUtil;
+
+import org.xutils.BuildConfig;
+import org.xutils.x;
+
+/**
+ * @desc 启动 全局配置
+ * Created by chenmeng on 2016/11/30.
+ */
+
+public class MyApplication extends Application{
+    public static String uuid = "";//uuid
+    public static String[] numberSum = null;//所有任务的编号集合
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    public static String appSelPath = "";//用户选择的目录路径
+    public static String appRootPath = "";//数据存放的根目录路径
+    public static String userName = "";//用户名
+    /**application对象*/
+    private static MyApplication instance;
+    public static int gatherNum = 0;//采集点的数据
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        initXutils();
+        appSelPath = Environment.getExternalStorageDirectory().toString();
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+
+        if (!preferences.getString("path",appSelPath).equals(appSelPath)) {
+            appSelPath=preferences.getString("path",appSelPath);
+        }
+        Log.i("TAG","appSelPath:"+appSelPath);
+        appRootPath = appSelPath + "/"+ RequestCode.APPNAME;
+//        uuid = UuidUtil.getUUID(getApplicationContext());
+        SDKInitializer.initialize(getApplicationContext());
+    }
+
+    public static MyApplication instance() {
+        if (instance != null) {
+            return instance;
+        } else {
+            return new MyApplication();
+        }
+    }
+
+    /**
+     * 初始化xutils框架
+     */
+    private void initXutils() {
+        x.Ext.init(this);
+        x.Ext.setDebug(BuildConfig.DEBUG); // 是否输出debug日志, 开启debug会影响性能.
+
+    }
+
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE);
+        }
+    }
+}

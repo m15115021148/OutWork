@@ -1,0 +1,315 @@
+package com.sitemap.nanchang.activity;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.TextView;
+
+import com.sitemap.nanchang.R;
+import com.sitemap.nanchang.application.MyApplication;
+import com.sitemap.nanchang.config.RequestCode;
+import com.sitemap.nanchang.fragments.ListFragment;
+import com.sitemap.nanchang.model.PersonModel;
+import com.sitemap.nanchang.util.DialogUtil;
+import com.sitemap.nanchang.util.FileUtil;
+import com.sitemap.nanchang.util.ParserUtil;
+import com.sitemap.nanchang.util.ToastUtil;
+import com.sitemap.nanchang.view.CallbackBundle;
+import com.sitemap.nanchang.view.OpenFileDialog;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class LoginActivity extends BaseActivity implements View.OnClickListener {
+    private LoginActivity mContext;
+    private EditText zhanghao, mima;
+    private CheckBox savePwd;
+    private TextView login;
+    private String persons;
+    private List<PersonModel> lPerson = new ArrayList<PersonModel>();
+    private boolean isSub = false;
+    static private int openfileDialogId = 0;
+    TextView path;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        init();
+    }
+
+    private void init() {
+        mContext = this;
+        zhanghao = (EditText) findViewById(R.id.zhanghao);
+        mima = (EditText) findViewById(R.id.mima);
+        savePwd = (CheckBox) findViewById(R.id.savePwd);
+        login = (TextView) findViewById(R.id.login);
+        login.setOnClickListener(this);
+        SharedPreferences preferences = mContext.getSharedPreferences("user", Context.MODE_PRIVATE);
+        if (preferences.getBoolean("save", false)) {
+            if (preferences.getString("username", "") != null && !preferences.getString("username", "").equals("")) {
+                zhanghao.setText(preferences.getString("username", ""));
+                if (preferences.getString("pwd", "") != null) {
+                    mima.setText(preferences.getString("pwd", ""));
+                }
+            }
+            savePwd.setChecked(true);
+        } else {
+            if (preferences.getString("username", "") != null && !preferences.getString("username", "").equals("")) {
+                zhanghao.setText(preferences.getString("username", ""));
+            }
+            savePwd.setChecked(false);
+        }
+        if (getIntent().getIntExtra("type",0)==1){
+            mima.setText("");
+        }
+        MyApplication.verifyStoragePermissions(LoginActivity.this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == login) {
+            if (zhanghao.getText().toString().trim().equals("") || zhanghao.getText().toString().trim() == null) {
+                ToastUtil.showBottomShort(this, "账号不能为空！");
+                return;
+            }
+            if (mima.getText().toString().trim().equals("") || mima.getText().toString().trim() == null) {
+                ToastUtil.showBottomShort(this, "密码不能为空！");
+                return;
+            }
+            if (sub()) {
+
+               final SharedPreferences preferences = mContext.getSharedPreferences("user", Context.MODE_PRIVATE);
+                if (preferences.getBoolean("first", true)) {
+                    final AlertDialog.Builder buidler = new AlertDialog.Builder(this);
+                    View view = LayoutInflater.from(this).inflate(
+                            R.layout.address_dialog, null);
+                    TextView wenjianjia=(TextView) view.findViewById(R.id.wenjianjia);
+                    TextView sure=(TextView) view.findViewById(R.id.sure);
+                    path=(TextView) view.findViewById(R.id.path);
+                    path.setText(Environment.getExternalStorageDirectory().toString());
+                    wenjianjia.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showDialog(openfileDialogId);
+                        }
+                    });
+                    buidler.setView(view);
+                    buidler.setCancelable(false);
+                    final AlertDialog aDialog=buidler.create();
+                    sure.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+//                            DialogUtil.customSystemDialog(LoginActivity.this, true, "提示", "存储位置一经确认将不可修改！", "确认修改", "取消", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+                                    MyApplication.appSelPath= path.getText().toString().trim();
+                                    MyApplication.appRootPath = MyApplication.appSelPath + "/"+ RequestCode.APPNAME;
+                                    SharedPreferences.Editor editor = preferences.edit();
+                                    editor.putBoolean("first", false);
+                                    editor.putString("path",path.getText().toString().trim());
+                                    editor.commit();
+                                    aDialog.dismiss();
+                                    Log.i("TAG","ppppppppppppppppp:"+MyApplication.appSelPath);
+                                    if (savePwd.isChecked()) {
+                                        editor.putString("username", zhanghao.getText().toString().trim());
+                                        editor.putString("pwd", mima.getText().toString().trim());
+                                        editor.putBoolean("save", true);
+                                        editor.commit();
+                                    } else {
+                                        editor.putString("username", zhanghao.getText().toString().trim());
+                                        editor.putString("pwd", "");
+                                        editor.putBoolean("save", false);
+                                        editor.commit();
+                                    }
+
+                                    Intent intent = new Intent(mContext, MainActivity.class);
+                                    startActivity(intent);
+                                    ToastUtil.showBottomShort(LoginActivity.this, "登录成功！");
+                                    finish();
+                                }
+//                            });
+//                        }
+                    });
+
+                    aDialog.show();
+                }else{
+                    SharedPreferences.Editor editor = preferences.edit();
+
+                    if (savePwd.isChecked()) {
+                        editor.putString("username", zhanghao.getText().toString().trim());
+                        editor.putString("pwd", mima.getText().toString().trim());
+                        editor.putBoolean("save", true);
+                        editor.commit();
+                    } else {
+                        editor.putString("username", zhanghao.getText().toString().trim());
+                        editor.putString("pwd", "");
+                        editor.putBoolean("save", false);
+                        editor.commit();
+                    }
+
+                    Intent intent = new Intent(mContext, MainActivity.class);
+                    startActivity(intent);
+                    ToastUtil.showBottomShort(LoginActivity.this, "登录成功！");
+                    finish();
+                }
+
+            } else {
+                ToastUtil.showBottomShort(this, "用户名或密码错误！");
+            }
+        }
+    }
+
+    /**
+     * 验证账号密码
+     *
+     * @return
+     */
+    private boolean sub() {
+//        File userFile=new File("file:///android_asset/persons.txt");
+//        if(userFile.exists()){
+//            Log.i("TAG","有文件");
+//            persons=FileUtil.readFilePath(userFile.getPath(),"");
+//        }
+
+//        File appFilePath = new File(FILE_PAHT +  RequestCode.APPNAME);
+//        appFilePath.mkdir();
+//        if (appFilePath.exists()){
+//            File downLoadFile = FileUtil.createOneFolder(appFilePath, RequestCode.DOWNLOAD);
+//            if (downLoadFile.exists()){
+//                    if (downLoadFile.exists()) {
+////                         List<PersonModel> lPerson=new ArrayList<PersonModel>();
+////                        PersonModel pm=new PersonModel();
+////                        pm.setUsername("zf");
+////                        pm.setPassword("123");
+////                        pm.setUuid("3312312sada");
+////                        lPerson.add(pm);
+////                        PersonModel pm1=new PersonModel();
+////                        pm1.setUsername("cm");
+////                        pm1.setPassword("123");
+////                        pm1.setUuid("sadasadas");
+////                        lPerson.add(pm1);
+////                        PersonModel pm2=new PersonModel();
+////                        pm2.setUsername("ch");
+////                        pm2.setPassword("123");
+////                        pm2.setUuid("123123213");
+////                        lPerson.add(pm2);
+//
+////                        String zhanghao=ParserUtil.arrayObjectToJson(lPerson,false);
+////                        FileUtil.saveFilePath(downLoadFile, RequestCode.PERSONS,zhanghao,true);
+//                    }
+//            }
+//        }else{
+//
+//        }
+//        String user = getFromAssets("persons.txt");
+        String userFile =  Environment.getExternalStorageDirectory().toString() + "/";
+        persons=FileUtil.readFilePath(userFile,RequestCode.PERSONS);
+        if (persons != null && !persons.equals("")) {
+            lPerson = ParserUtil.jsonToList(persons, PersonModel.class);
+            if (lPerson.size() > 0) {
+                for (int i = 0; i < lPerson.size(); i++) {
+                    String psw = MyApplication.MD5(mima.getText().toString().trim());
+                    if (zhanghao.getText().toString().trim().equals(lPerson.get(i).getUsername()) && psw.equals(lPerson.get(i).getPassword())) {
+                        isSub = true;
+                        MyApplication.uuid = lPerson.get(i).getUuid();
+                        MyApplication.userName = lPerson.get(i).getUsername();
+                    }
+                }
+                return isSub;
+            }
+        }else{
+            DialogUtil.customSystemDialog(LoginActivity.this, false, "提示", "请先将账号信息文件放置在手机根目录下再运行程序", "确定", "", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    System.exit(0);
+                }
+            });
+            return false;
+        }
+        return false;
+    }
+
+    /**
+     * 从assets读取文件
+     *
+     * @param fileName
+     * @return
+     */
+    public String getFromAssets(String fileName) {
+        try {
+            InputStreamReader inputReader = new InputStreamReader(getResources().getAssets().open(fileName));
+            BufferedReader bufReader = new BufferedReader(inputReader);
+            String line = "";
+            String Result = "";
+            while ((line = bufReader.readLine()) != null)
+                Result += line;
+            return Result;
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        if(id==openfileDialogId){
+            Map<String, Integer> images = new HashMap<String, Integer>();
+            // 下面几句设置各文件类型的图标， 需要你先把图标添加到资源文件夹
+            images.put(OpenFileDialog.sRoot, R.drawable.filedialog_root);	// 根目录图标
+            images.put(OpenFileDialog.sParent, R.drawable.filedialog_folder_up);	//返回上一层的图标
+            images.put(OpenFileDialog.sFolder, R.drawable.filedialog_folder);	//文件夹图标
+            images.put("wav", R.drawable.filedialog_wavfile);	//wav文件图标
+            images.put(OpenFileDialog.sEmpty, R.drawable.filedialog_root);
+            Dialog dialog = OpenFileDialog.createDialog(id, this, "选择存储路径", new CallbackBundle() {
+                        @Override
+                        public void callback(Bundle bundle) {
+                            String filepath = bundle.getString("path");
+//                            setTitle(filepath); // 把文件路径显示在标题上
+                            path.setText(filepath);
+                        }
+                    },
+                    ".wav;",
+                    images);
+            return dialog;
+        }
+        return null;
+    }
+
+    /**
+     *	退出activity
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            //退出所有的activity
+            Intent intent = new Intent();
+            intent.setAction(BaseActivity.TAG_ESC_ACTIVITY);
+            sendBroadcast(intent);
+//            System.exit(0);
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+}

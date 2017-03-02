@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="@dimen/_664px_in720p"
+        android:layout_height="@dimen/_220px_in720p"
+        android:layout_marginTop="@dimen/_30px_in720p"
+        android:background="@drawable/itembg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/task_image"
+            android:layout_width="@dimen/_150px_in720p"
+            android:layout_height="@dimen/_150px_in720p"
+            android:layout_margin="@dimen/_30px_in720p"
+            android:scaleType="fitXY" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/_30px_in720p"
+            android:layout_marginRight="@dimen/_30px_in720p"
+            android:layout_marginTop="@dimen/_30px_in720p"
+            >
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerVertical="true"
+                android:singleLine="true"
+                android:textColor="#333333"
+                android:textSize="@dimen/_32px_in720p" />
+
+            <TextView
+                android:layout_below="@+id/name"
+                android:layout_above="@+id/time"
+                android:id="@+id/bianhao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:textColor="@color/gray"
+                android:textSize="@dimen/_28px_in720p" />
+
+            <TextView
+                android:layout_centerVertical="true"
+                android:layout_alignParentBottom="true"
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="@color/gray"
+                android:textSize="@dimen/_28px_in720p"
+                />
+            <ProgressBar
+                style="?android:attr/progressBarStyle"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_width="@dimen/_40px_in720p"
+                android:layout_height="@dimen/_40px_in720p"
+                android:visibility="gone"
+                android:id="@+id/progressBar"
+                />
+            <ImageView
+                android:visibility="gone"
+                android:background="@drawable/up_loading"
+                android:id="@+id/upLoading"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_width="@dimen/_40px_in720p"
+                android:layout_height="@dimen/_40px_in720p" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+
+                    />
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/danwei"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/_24px_in720p" />
+
+                <TextView
+                    android:id="@+id/isZip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_60px_in720p"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/_30px_in720p"
+                    android:gravity="center"
+                    android:text="已打包"
+                    android:textColor="#e46b12"
+                    android:textSize="@dimen/_30px_in720p" />
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

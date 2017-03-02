@@ -1,0 +1,268 @@
+package com.sitemap.nanchang.fragments;
+
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Gallery;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.sitemap.nanchang.R;
+import com.sitemap.nanchang.activity.TaskDescActivity;
+import com.sitemap.nanchang.adapter.TaskListViewAdapter;
+import com.sitemap.nanchang.application.MyApplication;
+import com.sitemap.nanchang.config.RequestCode;
+import com.sitemap.nanchang.model.TaskModel;
+import com.sitemap.nanchang.model.TaskPathModel;
+import com.sitemap.nanchang.util.DialogUtil;
+import com.sitemap.nanchang.util.FileNames;
+import com.sitemap.nanchang.util.FileUtil;
+import com.sitemap.nanchang.util.ParserUtil;
+import com.sitemap.nanchang.util.ToastUtil;
+import com.sitemap.nanchang.util.ZipUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ListFragment extends Fragment implements TaskListViewAdapter.OnClickTaskUpLoading{
+    private Context mContext;
+    private ListView listView;
+    private View view;
+    private TaskListViewAdapter adapter;
+    private List<TaskModel> lTask=new ArrayList<TaskModel>();
+    private List<TaskPathModel> lIsZip=new ArrayList<TaskPathModel>();
+    private  Handler handler=null;
+    private String zipPath;//压缩文件 存放的路径
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        mContext = inflater.getContext();
+        view=inflater.inflate(R.layout.fragment_list, container, false);
+        listView=(ListView) view.findViewById(R.id.task_list);
+
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                switch(msg.what) {
+                    case 0:
+                         AlertDialog.Builder buidler = new AlertDialog.Builder(ListFragment.this.getContext());
+                        View view = LayoutInflater.from(ListFragment.this.getContext()).inflate(
+                                R.layout.progress_dialog, null);
+                        buidler.setView(view);
+                       final AlertDialog aDialog=buidler.create();
+                        aDialog.show();
+                        new Handler().postDelayed(new Runnable() {
+
+                            public void run() {
+                                aDialog.dismiss();
+                            }
+                        }, 3000);
+                        break;
+                    case 101:
+                        int pos = Integer.parseInt(msg.obj.toString());
+                        lIsZip.get(pos).setUpload("0");
+                        adapter.notifyDataSetChanged();
+                        onResume();
+                        ToastUtil.showBottomShort(mContext,"压缩成功");
+                        break;
+                }
+
+            }
+        };
+        return view;
+    }
+
+
+
+    @Override
+    public void onResume() {
+        File appFilePath = FileUtil.createFolder(MyApplication.appRootPath);
+        if (appFilePath.exists()){
+            File upLoadFile = FileUtil.createOneFolder(appFilePath, RequestCode.UPLOAD);
+            File tempFile = FileUtil.createOneFolder(appFilePath, RequestCode.TEMP_TASK);
+            zipPath = tempFile.getPath();
+            if (upLoadFile.exists()){//uuid
+                File userUuidFile = FileUtil.createOneFolder(upLoadFile, MyApplication.uuid);
+                if (userUuidFile.exists()){//创建task目录 多个
+                    lTask.clear();
+                    lIsZip.clear();
+                    MyApplication.numberSum = new String[userUuidFile.listFiles().length];
+                    for (int i = 0; i < userUuidFile.listFiles().length; i++) {
+                        if (!userUuidFile.listFiles()[i].isFile()){
+                            String number=userUuidFile.listFiles()[i].getName();
+                            MyApplication.numberSum[i] = number;
+                            File numberFile=FileUtil.createOneFolder(userUuidFile,number);
+                            File userTextFile = FileUtil.createOneFolder(numberFile,RequestCode.TEXT);
+                            TaskPathModel tpm=new TaskPathModel();
+                            tpm.setUpload("0");
+                            tpm.setSrcZipPath(userUuidFile.getPath());
+                            tpm.setProjectName(number);
+                            tpm.setProjectPath(numberFile.getPath());
+                            if (userTextFile.exists()){
+                                String text=FileUtil.readFilePath(userTextFile.getPath(),RequestCode.TASKNAME);
+                                if (text!=null){
+                                    TaskModel tm = (TaskModel) ParserUtil.jsonToObject(text, TaskModel.class);
+                                    lTask.add(tm);
+                                    tpm.setTextPath(userTextFile.getPath());
+                                    tpm.setIsZip("0");
+                                }
+                            }
+                            File userImgFile = FileUtil.createOneFolder(numberFile,RequestCode.IMG);
+                            if (userImgFile.exists()){
+                                if (userImgFile.listFiles().length>0){
+                                    if (userImgFile.listFiles()[0].getName().contains(".jpg")){
+                                        tpm.setJpgImgPath(userImgFile.listFiles()[0].getPath());
+                                    }
+                                }
+                                tpm.setImgPath(userImgFile.getPath());
+                            }
+                            File userVoiceFile = FileUtil.createOneFolder(numberFile,RequestCode.VOICE);
+                            if (userVoiceFile.exists()){
+                                tpm.setVoicePath(userVoiceFile.getPath());
+                            }
+                            File userVideoFile = FileUtil.createOneFolder(numberFile,RequestCode.VIDEO);
+                            if (userVideoFile.exists()){
+                                tpm.setVideoPath(userVideoFile.getPath());
+                            }
+                            lIsZip.add(tpm);
+                        }
+                    }
+
+                }
+            }
+            if (tempFile.exists()){
+//                if (tempFile.listFiles().length>0) {
+                    for (int i = 0; i < tempFile.listFiles().length; i++) {
+                        if (tempFile.listFiles()[i].getName().contains(".zip")) {
+                            for (int j = 0; j < lTask.size(); j++) {
+                                String number = tempFile.listFiles()[i].getName().split("_")[1];
+                                if ((lTask.get(j).getTaskNumber()).equals(number)) {
+                                    lIsZip.get(j).setIsZip("1");
+                                    lIsZip.get(j).setZipPath(tempFile.listFiles()[i].getPath());
+                                    Log.e("result","setZipPath:"+tempFile.listFiles()[i].getPath());
+                                }
+                            }
+                        }
+//                    }
+                }
+            }
+            iniListViewData();
+        }else{
+        }
+        super.onResume();
+    }
+
+    /**
+     * 初始化listview
+     */
+    private void iniListViewData() {
+        adapter=new TaskListViewAdapter(this.getContext(),lTask,lIsZip,this);
+        TextView emptyView = new TextView(ListFragment.this.getContext());
+        emptyView.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.FILL_PARENT, Gallery.LayoutParams.FILL_PARENT));
+        emptyView.setText("暂无任务信息！");
+        emptyView.setGravity(Gravity.CENTER_HORIZONTAL| Gravity.CENTER_VERTICAL);
+        emptyView.setVisibility(View.GONE);
+        ((ViewGroup)listView.getParent()).addView(emptyView);
+        listView.setEmptyView(emptyView);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                if (lIsZip.get(position).getIsZip().equals("0")){//没有压缩
+                    Intent intent = new Intent(mContext,TaskDescActivity.class);
+                    intent.putExtra("type",2);//you压缩按钮
+                    Bundle b = new Bundle();
+                    b.putSerializable("TaskModel",lTask.get(position));
+                    b.putSerializable("TaskPathModel",lIsZip.get(position));
+                    intent.putExtras(b);
+                    startActivity(intent);
+//                }
+            }
+        });
+    }
+
+
+    /**
+     * 上传
+     * @param pos
+     */
+    @Override
+    public void onClickUpLoading(final int pos,int type) {
+        if (type == 1) {
+            if(lIsZip.get(pos).getIsZip().equals("0")){//没有压缩 点击就压缩
+                lIsZip.get(pos).setUpload("1");
+                adapter.notifyDataSetChanged();
+//                new Handler().postDelayed(new Runnable() {
+//                    //
+//                    public void run() {
+//                        lIsZip.get(pos).setUpload("0");
+//                        ToastUtil.showBottomShort(mContext, "上传成功！");
+//                        adapter.notifyDataSetChanged();
+//                    }
+//                }, 3000);
+                final ZipUtils zipUtils = new ZipUtils();
+                final FileNames names = new FileNames();
+                //将压缩放入线程中
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                    try {
+                        zipUtils.setCallBack(new ZipUtils.ZipOverCallBack() {
+                            @Override
+                            public void onZipOver() {
+                                Message msg = handler.obtainMessage();
+                                msg.what = 101;
+                                msg.obj = String.valueOf(pos);
+                                handler.sendMessage(msg);
+                            }
+                        });
+                        zipUtils.zip(lIsZip.get(pos).getProjectPath(),zipPath, names.getZipTaskName(lIsZip.get(pos).getProjectName()), MyApplication.uuid);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    }
+                }) ;
+                thread.start();
+            }else {
+                ToastUtil.showCenterShort(mContext,"该任务已完成！");
+            }
+
+        } else if (type==2) {
+            View viewDialog = DialogUtil.customPromptDialog(mContext, "确定", "取消",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            FileUtil.deleteFolder(new File(lIsZip.get(pos).getProjectPath()));
+                            onResume();
+                            ToastUtil.showBottomShort(mContext,"删除成功");
+                        }
+                    }, null);
+            TextView tv = (TextView) viewDialog.findViewById(R.id.dialog_tv_txt);
+            tv.setText("确定删除吗?");
+        }
+    }
+
+}

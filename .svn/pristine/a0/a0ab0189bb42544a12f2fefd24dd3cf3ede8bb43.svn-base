@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.sitemap.nanchang">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- 百度基础地图权限 -->
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_GPS" />
+    <!-- 百度定位权限 -->
+    <!-- 这个权限用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" >
+    </uses-permission>
+    <!-- 这个权限用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" >
+    </uses-permission>
+    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" >
+    </uses-permission>
+    <!-- 获取运营商信息，用于支持提供运营商信息相关的接口 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" >
+    </uses-permission>
+    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" >
+    </uses-permission>
+    <!-- 用于读取手机当前的状态 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" >
+    </uses-permission>
+    <!-- SD卡读取权限，用户写入离线定位数据 -->
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" >
+    </uses-permission>
+
+
+    <application
+        android:name=".application.MyApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/logo"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <!-- 第三方百度定位AK -->
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="zzyG3xZafc5EZXgydXcr0A6NLz5jcNFO" />
+        <!-- will： android:value="zzyG3xZafc5EZXgydXcr0A6NLz5jcNFO"-->
+      <!-- 张帆： android:value="3vjCgpYLPlQB5GAT0qXtkyLGQWquIqWs"-->
+        <activity android:name=".activity.MainActivity" >
+
+        </activity>
+        <activity android:name=".activity.TaskDescActivity">
+
+        </activity>
+        <activity android:name=".activity.CharDetailActivity"/>
+        <activity android:name=".activity.MySelfActivity"
+            android:label="@string/myself"/>
+        <activity android:name=".activity.ChangePswActivity"
+            android:label="@string/change_password"/>
+        <activity android:name=".activity.LoginActivity" >
+           <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.ImageSelectActivity"
+            android:label="@string/img"></activity>
+        <activity android:name=".activity.VideoSelectActivity"
+            android:label="@string/video">
+        </activity>
+        <activity android:name=".activity.VoiceSelectActivity"
+            android:label="@string/voice">
+        </activity>
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:label="第三方定位服务"
+            android:process=":remote" >
+        </service>
+
+        <activity android:name=".activity.PatchDesActivity"></activity>
+    </application>
+
+</manifest>

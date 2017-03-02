@@ -1,0 +1,80 @@
+package com.sitemap.nanchang.gps;
+
+import android.location.GpsSatellite;
+import android.location.GpsStatus;
+import android.location.Location;
+import android.location.LocationListener;
+import android.os.Bundle;
+import android.util.Log;
+
+import com.sitemap.nanchang.config.RequestCode;
+import com.sitemap.nanchang.model.GpsModel;
+import com.sitemap.nanchang.util.DateUtil;
+import com.sitemap.nanchang.util.FileUtil;
+import com.sitemap.nanchang.util.ParserUtil;
+
+import java.io.File;
+import java.util.Iterator;
+
+/**
+ * gps位置变化监听类
+ * Description:
+ * @author chenhao
+ * @date   2016-8-15
+ */
+public class GpsLocationListener implements LocationListener {
+
+	private double lat;
+	private double lng;
+	private String gpsPath;
+
+	public GpsLocationListener(String path){
+		this.gpsPath = path;
+	}
+
+
+	@Override
+	public void onProviderEnabled(String provider) {
+//			LocationLog(manager.getLastKnownLocation(provider));
+	}
+
+	@Override
+	public void onProviderDisabled(String provider) {
+		LocationLog(null);
+	}
+
+	@Override
+	public void onLocationChanged(Location location) {
+		// location为变化完的新位置，更新显示
+		LocationLog(location);
+	}
+
+	//		卫星状态发生改变
+	@Override
+	public void onStatusChanged(String provider, int status,
+								Bundle extras) {
+
+	}
+
+	private void LocationLog(Location location) {
+		if (location == null) {
+			Log.i("will", "location is null");
+			return;
+		}
+		Log.i("will", location.getLongitude() + "  ");
+		Log.i("will", location.getLatitude() + "  ");
+		lat = location.getLatitude();
+		lng = location.getLongitude();
+		GpsModel gpsModel = new GpsModel();
+		gpsModel.setLat(String.valueOf(lat));
+		gpsModel.setLng(String.valueOf(lng));
+		gpsModel.setTime(DateUtil.getCurrentDate());
+		if (!gpsPath.equals("") && lat != 4.9E-324 && lat != 0 & lng != 0) {
+			File gpsFile = new File(gpsPath);
+			FileUtil.saveFilePath(gpsFile, RequestCode.GPSTXT, ParserUtil.objectToJson(gpsModel) + "\r\n", true);
+		}
+	}
+
+
+
+}

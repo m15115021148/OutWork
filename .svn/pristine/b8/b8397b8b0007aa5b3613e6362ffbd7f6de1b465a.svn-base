@@ -1,0 +1,227 @@
+package com.sitemap.nanchang.adapter;
+
+import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.sitemap.nanchang.R;
+import com.sitemap.nanchang.model.PatchExpModel;
+import com.sitemap.nanchang.model.PatchModel;
+import com.sitemap.nanchang.util.HttpImageUtil;
+
+import java.util.List;
+
+/**
+ * @desc 适配器
+ * Created by chenmeng on 2017/1/4.
+ */
+public class PatchExpListViewAdapter extends BaseExpandableListAdapter {
+    private Context mContext;
+    private List<PatchExpModel> mList;
+    private ChildHolder childHolder;
+    private GroupHolder groupHolder;
+    private Handler handler;
+
+    public PatchExpListViewAdapter(Context context,List<PatchExpModel> list,OnCallBackUpdate callBack){
+        this.mContext = context;
+        this.mList = list;
+        this.mCallBack = callBack;
+        handler = new Handler(){
+
+            @Override
+            public void handleMessage(Message msg) {
+                notifyDataSetChanged();
+                super.handleMessage(msg);
+            }
+        };
+    }
+
+    /**
+     * 刷新
+     */
+    public void refresh() {
+        handler.sendMessage(new Message());
+    }
+
+    /**
+     * 内部接口
+     */
+    public interface OnCallBackUpdate {
+        void onClickAddListener(int groupPosition);
+
+        void onClickDeleteListener(int groupPosition, int childPosition);
+
+        void onClickUpLoadingListener(int groupPosition, int childPosition);
+        void onClickDeleteOneListener(int groupPosition, int childPosition);
+    }
+
+    private OnCallBackUpdate mCallBack;
+
+    @Override
+    public int getGroupCount() {
+        return mList.size();
+    }
+
+    @Override
+    public int getChildrenCount(int groupPosition) {
+        return mList.get(groupPosition).getPatchModelList().size();
+    }
+
+    @Override
+    public Object getGroup(int groupPosition) {
+        return mList.get(groupPosition);
+    }
+
+    @Override
+    public Object getChild(int groupPosition, int childPosition) {
+        return mList.get(groupPosition).getPatchModelList().get(childPosition);
+    }
+
+    @Override
+    public long getGroupId(int groupPosition) {
+        return groupPosition;
+    }
+
+    @Override
+    public long getChildId(int groupPosition, int childPosition) {
+        return childPosition;
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return false;
+    }
+
+    @Override
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        if (convertView == null){
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.patch_group_list_view_item, null);
+            groupHolder = new GroupHolder();
+            groupHolder.typeName = (TextView) convertView.findViewById(R.id.type_name);
+            groupHolder.add = (TextView) convertView.findViewById(R.id.patch_add);
+            convertView.setTag(groupHolder);
+            //去抢父类的点击事件 无法响应点击
+            convertView.setClickable(true);
+        }else{
+            groupHolder = (GroupHolder) convertView.getTag();
+        }
+        groupHolder.typeName.setText(mList.get(groupPosition).getType());
+        final int pos = groupPosition;
+        groupHolder.add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mCallBack!=null){
+                    mCallBack.onClickAddListener(pos);
+                }
+            }
+        });
+        return convertView;
+    }
+
+    @Override
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.patch_list_view_item, null);
+            childHolder = new ChildHolder();
+            childHolder.task_image = (ImageView) convertView.findViewById(R.id.task_image);
+            childHolder.name = (TextView) convertView.findViewById(R.id.name);
+            childHolder.upText = (TextView) convertView.findViewById(R.id.up_loading_text);
+            childHolder.address = (TextView) convertView.findViewById(R.id.address);
+            childHolder.time = (TextView) convertView.findViewById(R.id.time);
+            childHolder.uploadText= (TextView) convertView.findViewById(R.id.uploadText);
+            childHolder.upLoading = (ImageView) convertView.findViewById(R.id.upLoading);
+            childHolder.mLayout = (LinearLayout) convertView.findViewById(R.id.layout);
+            childHolder.del = (TextView) convertView.findViewById(R.id.delete);
+            childHolder.zip = (TextView) convertView.findViewById(R.id.zip);
+            childHolder.isShow = (TextView) convertView.findViewById(R.id.is_show);
+            childHolder.delOne = (ImageView) convertView.findViewById(R.id.patch_delete);
+            convertView.setTag(childHolder);
+        } else {
+            childHolder = (ChildHolder) convertView.getTag();
+        }
+        if (mList.get(groupPosition).getPatchModelList().size()>0){
+            PatchModel patchModel = mList.get(groupPosition).getPatchModelList().get(childPosition);
+            childHolder.name.setText(patchModel.getName());
+            childHolder.upText.setText(patchModel.getUploadText());
+            childHolder.address.setText(patchModel.getAddress());
+            childHolder.time.setText(patchModel.getTime());
+            HttpImageUtil.loadImage(childHolder.task_image,patchModel.getImgPath());
+
+            if (childPosition==mList.get(groupPosition).getPatchModelList().size()-1){
+                childHolder.isShow.setVisibility(View.VISIBLE);
+                childHolder.mLayout.setVisibility(View.VISIBLE);
+            }else{
+                childHolder.isShow.setVisibility(View.GONE);
+                childHolder.mLayout.setVisibility(View.GONE);
+            }
+
+            if (mList.get(groupPosition).getIsZip().equals("1")){//已压缩
+                childHolder.zip.setText("删除压缩包");
+            }else{
+                childHolder.zip.setText("压缩");
+            }
+
+
+        }
+
+        final int groupPos = groupPosition;
+        final int childPos = childPosition;
+
+        childHolder.del.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mCallBack!=null){
+                    mCallBack.onClickDeleteListener(groupPos, childPos);
+                }
+            }
+        });
+        childHolder.zip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mCallBack!=null){
+                    mCallBack.onClickUpLoadingListener(groupPos, childPos);
+                }
+            }
+        });
+
+        childHolder.delOne.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mCallBack!=null){
+                    mCallBack.onClickDeleteOneListener(groupPos, childPos);
+                }
+            }
+        });
+
+        return convertView;
+    }
+
+    /** ExpandableListView 如果子条目需要响应click事件,必需返回true */
+    @Override
+    public boolean isChildSelectable(int groupPosition, int childPosition) {
+        return true;
+    }
+
+    private class GroupHolder{
+        TextView typeName;//类别
+        TextView add;//增加
+    }
+
+    private class ChildHolder{
+        ImageView task_image,upLoading;
+        TextView name,upText,address,time,uploadText;
+        TextView del,zip;//删除 压缩
+        LinearLayout mLayout;//布局 删除 压缩的
+        TextView isShow;//是否显示间隔
+        ImageView delOne;//单个删除
+    }
+
+}

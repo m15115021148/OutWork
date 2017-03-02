@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/sel_check"
+        android:padding="@dimen/_10px_in720p"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_190px_in720p">
+
+        <ImageView
+            android:scaleType="fitXY"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/img"
+            android:src="@drawable/add_img"
+            android:layout_width="@dimen/_180px_in720p"
+            android:layout_height="@dimen/_180px_in720p" />
+
+ <!--       <ImageView
+            android:focusable="true"
+            android:visibility="gone"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/img_add"
+            android:background="@drawable/add_img"
+            android:layout_width="@dimen/_60px_in720p"
+            android:layout_height="@dimen/_60px_in720p" />
+-->
+        <ImageView
+            android:button="@null"
+            android:visibility="gone"
+            android:id="@+id/sel"
+            android:background="@drawable/image_sel_state"
+            android:layout_width="@dimen/_35px_in720p"
+            android:layout_height="@dimen/_35px_in720p"
+            android:layout_marginBottom="@dimen/_10px_in720p"
+            android:layout_marginRight="@dimen/_10px_in720p"
+            android:layout_alignParentBottom="true"
+            android:layout_alignRight="@+id/img"
+            android:layout_alignEnd="@+id/img" />
+
+    </RelativeLayout>
+
+</LinearLayout>

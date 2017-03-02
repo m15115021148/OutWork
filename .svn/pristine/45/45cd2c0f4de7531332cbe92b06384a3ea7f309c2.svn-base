@@ -1,0 +1,101 @@
+package com.sitemap.nanchang.model;
+
+import java.io.Serializable;
+
+/**
+ *
+ *@desc 地址实体类
+ * Created by chenmeng on 2016/12/2.
+ */
+public class TaskPathModel implements Serializable {
+    private String isZip;
+    private String textPath;
+    private String imgPath;
+    private String videoPath;
+    private String srcZipPath;//需要压缩的地址
+    private String zipPath;//压缩文件 存放的地址
+    private String jpgImgPath;//显示的图片路径
+    private String voicePath;//音频路径
+    private String projectName;//项目目录路径
+    private String upload;//正在上传
+
+    public String getUpload() {
+        return upload;
+    }
+
+    public void setUpload(String upload) {
+        this.upload = upload;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectPath) {
+        this.projectName = projectPath;
+    }
+
+    public String getVoicePath() {
+        return voicePath;
+    }
+
+    public void setVoicePath(String voicePath) {
+        this.voicePath = voicePath;
+    }
+
+    public String getJpgImgPath() {
+        return jpgImgPath;
+    }
+
+    public void setJpgImgPath(String jpgImgPath) {
+        this.jpgImgPath = jpgImgPath;
+    }
+
+    public String getIsZip() {
+        return isZip;
+    }
+
+    public void setIsZip(String isZip) {
+        this.isZip = isZip;
+    }
+
+    public String getTextPath() {
+        return textPath;
+    }
+
+    public void setTextPath(String textPath) {
+        this.textPath = textPath;
+    }
+
+    public String getImgPath() {
+        return imgPath;
+    }
+
+    public void setImgPath(String imgPath) {
+        this.imgPath = imgPath;
+    }
+
+    public String getVideoPath() {
+        return videoPath;
+    }
+
+    public void setVideoPath(String videoPath) {
+        this.videoPath = videoPath;
+    }
+
+    public String getSrcZipPath() {
+        return srcZipPath;
+    }
+
+    public void setSrcZipPath(String srcZipPath) {
+        this.srcZipPath = srcZipPath;
+    }
+
+    public String getZipPath() {
+        return zipPath;
+    }
+
+    public void setZipPath(String zipPath) {
+        this.zipPath = zipPath;
+    }
+}

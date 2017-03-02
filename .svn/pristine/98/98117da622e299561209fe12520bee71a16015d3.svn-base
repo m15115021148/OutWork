@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/group_layout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_90px_in720p"
+        android:background="@drawable/patch_type_name_bg">
+
+        <RelativeLayout
+            android:layout_weight="1"
+            android:id="@+id/type_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            >
+
+            <ImageView
+                android:id="@+id/status"
+                android:layout_width="@dimen/_20px_in720p"
+                android:layout_height="@dimen/_20px_in720p"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/_20px_in720p"
+                android:src="@drawable/statue_1" />
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/_10px_in720p"
+                android:layout_marginRight="@dimen/_20px_in720p"
+                android:layout_toRightOf="@+id/status"
+                android:gravity="left"
+                android:singleLine="true"
+                android:text="类别名称:1111"
+                android:textColor="@color/black_dan"
+                android:textSize="@dimen/_35px_in720p" />
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:paddingRight="@dimen/_20px_in720p"
+            android:gravity="center"
+            android:id="@+id/patch_add"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="添加采集点"
+            android:textColor="@color/lan_dan"
+            android:textSize="@dimen/_30px_in720p" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_2px_in720p"
+        android:background="#e5e5e5" />
+
+<LinearLayout
+    android:visibility="gone"
+    android:paddingRight="@dimen/_20px_in720p"
+    android:gravity="center|right"
+    android:id="@+id/gather_is_show"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_100px_in720p">
+
+    <TextView
+        android:id="@+id/gather_del"
+        android:textColor="@color/red_title"
+        android:textSize="@dimen/_30px_in720p"
+        android:gravity="center"
+        android:text="删除类别"
+        android:background="@drawable/bt_1"
+        android:layout_width="@dimen/_180px_in720p"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
+
+
+
+
+
+
+
+</LinearLayout>

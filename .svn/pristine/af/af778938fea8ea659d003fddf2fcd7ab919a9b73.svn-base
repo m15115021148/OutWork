@@ -1,0 +1,305 @@
+package com.sitemap.nanchang.activity;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.sitemap.nanchang.R;
+import com.sitemap.nanchang.application.MyApplication;
+import com.sitemap.nanchang.config.RequestCode;
+import com.sitemap.nanchang.util.DialogUtil;
+import com.sitemap.nanchang.util.FileUtil;
+import com.sitemap.nanchang.util.ToastUtil;
+import com.sitemap.nanchang.view.CallbackBundle;
+import com.sitemap.nanchang.view.OpenFileDialog;
+import com.sitemap.nanchang.view.WheelView;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * @author chenmeng created by 2016/12/8
+ * @desc 我的页面
+ */
+public class MySelfActivity extends BaseActivity implements View.OnClickListener {
+    private MySelfActivity mContext;//本类
+    private LinearLayout mBack;//返回上一层
+    private TextView mTitle;//标题
+    private RelativeLayout mUserName, mUserPsw, mZipPath, mAppPath;//用户名  登录密码  压缩地址  存储地址
+    private RelativeLayout mClear;//清空数据
+    private TextView appPath;//存储地址
+    private TextView mExit;//安全退出
+    private View dailogView;//名称输入的viewdialog
+    private TextView name, zipPath;//用户名 压缩包目录
+    private int openfileDialogId = 0;
+    private String appRootPath = "";//路径
+    private RelativeLayout mGps;//采集
+    private TextView mGpsTime;//采集时间
+    private SharedPreferences preferences;
+    private String curDate = "";//选择的分
+    private String curTime = "";//选择的秒
+    private OpenFileDialog openFileDialog;//文件选择
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_my_self);
+        mContext = this;
+        initView();
+        initData();
+    }
+
+    /**
+     * 初始化数据
+     */
+    private void initData() {
+        zipPath.setText(MyApplication.appRootPath + "/" + RequestCode.TEMP_TASK);
+        appPath.setText(MyApplication.appRootPath);
+        name.setText(MyApplication.userName);
+        openFileDialog = new OpenFileDialog(this);
+        preferences = mContext.getSharedPreferences("user", Context.MODE_PRIVATE);
+        if (!preferences.getString("gpsTime","").equals("")){
+            mGpsTime.setText(Integer.parseInt(preferences.getString("gpsTime",""))/1000+"秒");
+        }else{
+            mGpsTime.setText("30秒");
+        }
+    }
+
+    /**
+     * 初始化view
+     */
+    private void initView() {
+        mBack = (LinearLayout) findViewById(R.id.include_title).findViewById(R.id.back);
+        mBack.setOnClickListener(this);
+        mTitle = (TextView) findViewById(R.id.include_title).findViewById(R.id.title);
+        mTitle.setText("我的");
+        mUserName = (RelativeLayout) findViewById(R.id.my_self_name);
+        mUserName.setOnClickListener(this);
+        mUserPsw = (RelativeLayout) findViewById(R.id.my_self_psw);
+        mUserPsw.setOnClickListener(this);
+        mZipPath = (RelativeLayout) findViewById(R.id.my_self_zipPath);
+        mZipPath.setOnClickListener(this);
+        mAppPath = (RelativeLayout) findViewById(R.id.my_self_filePath);
+        mAppPath.setOnClickListener(this);
+        appPath = (TextView) findViewById(R.id.appPath);
+        zipPath = (TextView) findViewById(R.id.zipPath);
+        mExit = (TextView) findViewById(R.id.exit);
+        mExit.setOnClickListener(this);
+        name = (TextView) findViewById(R.id.name);
+        mClear = (RelativeLayout) findViewById(R.id.my_self_clear);
+        mClear.setOnClickListener(this);
+        mGps = (RelativeLayout) findViewById(R.id.my_self_gps_time);
+        mGps.setOnClickListener(this);
+        mGpsTime = (TextView) findViewById(R.id.gps_time);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == mBack) {
+            finish();
+        }
+        if (v == mUserName) {
+        }
+        if (v == mUserPsw) {
+            Intent intent = new Intent(mContext, ChangePswActivity.class);
+            startActivity(intent);
+        }
+        if (v == mZipPath) {
+        }
+        if (v == mAppPath) {
+            showDialog(openfileDialogId);
+        }
+        if(v == mClear){
+            View viewDialog = DialogUtil.customPromptDialog(mContext, "确定", "取消",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //删除文件
+                            if (new File(MyApplication.appRootPath).getName().equals(RequestCode.APPNAME)){
+                                FileUtil.deleteFolder(new File(MyApplication.appRootPath));
+                            }
+                            List<File> files = FileUtil.getListFiles(MyApplication.appRootPath);
+                            for (File file:files){//得到选择目录下所以文件夹的名称
+                                if (file.getName().equals(RequestCode.TASK)||
+                                        file.getName().equals(RequestCode.GATHER)||file.getName().equals(RequestCode.TEMP_TASK)||
+                                        file.getName().equals(RequestCode.TEMP_GATHER)){
+                                    FileUtil.deleteFolder(new File(file.getPath()));
+                                }
+                            }
+                            MyApplication.appFile = FileUtil.createFolder(MyApplication.appRootPath);
+                            if (MyApplication.appFile.exists()) {
+                                MyApplication.taskFile = FileUtil.createOneFolder(MyApplication.appFile, RequestCode.TASK);
+                                MyApplication.taskTempFile = FileUtil.createOneFolder(MyApplication.appFile, RequestCode.TEMP_TASK);
+                                MyApplication.gatherFile = FileUtil.createOneFolder(MyApplication.appFile, RequestCode.GATHER);
+                                MyApplication.gatherTempFile = FileUtil.createOneFolder(MyApplication.appFile, RequestCode.TEMP_GATHER);
+                            }
+                        }
+                    }, null);
+            TextView tv = (TextView) viewDialog.findViewById(R.id.dialog_tv_txt);
+            tv.setText("是否要清空数据?");
+        }
+        if (v == mExit) {//安全退出
+            View viewDialog = DialogUtil.customPromptDialog(mContext, "确定", "取消",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(mContext, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }, null);
+            TextView tv = (TextView) viewDialog.findViewById(R.id.dialog_tv_txt);
+            tv.setText("确定要退出吗?");
+        }
+        if (v == mGps){
+            getDateTime();
+        }
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        if (id == openfileDialogId) {
+            Map<String, Integer> images = new HashMap<String, Integer>();
+            // 下面几句设置各文件类型的图标， 需要你先把图标添加到资源文件夹
+            images.put(OpenFileDialog.sRoot, R.drawable.filedialog_root);    // 根目录图标
+            images.put(OpenFileDialog.sParent, R.drawable.filedialog_folder_up);    //返回上一层的图标
+            images.put(OpenFileDialog.sFolder, R.drawable.filedialog_folder);    //文件夹图标
+            images.put("wav", R.drawable.filedialog_wavfile);    //wav文件图标
+            images.put(OpenFileDialog.sEmpty, R.drawable.filedialog_root);
+            Dialog dialog = openFileDialog.createDialog(id, this, "选择存储路径", new CallbackBundle() {
+                        @Override
+                        public void callback(Bundle bundle) {
+                            String filepath = bundle.getString("path");
+                            appRootPath = filepath;
+                            MyApplication.appSelPath = appRootPath;
+                            MyApplication.appRootPath = MyApplication.appSelPath;
+                            appPath.setText(MyApplication.appRootPath);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putString("path",MyApplication.appRootPath);
+                            editor.commit();
+
+                            MyApplication.appFile = FileUtil.createFolder(MyApplication.appRootPath);
+                            if (MyApplication.appFile.exists()) {
+                                MyApplication.taskFile = FileUtil.createOneFolder(MyApplication.appFile, RequestCode.TASK);
+                                MyApplication.taskTempFile = FileUtil.createOneFolder(MyApplication.appFile, RequestCode.TEMP_TASK);
+                                MyApplication.gatherFile = FileUtil.createOneFolder(MyApplication.appFile, RequestCode.GATHER);
+                                MyApplication.gatherTempFile = FileUtil.createOneFolder(MyApplication.appFile, RequestCode.TEMP_GATHER);
+                            }
+                        }
+                    },
+                    ".wav;",
+                    images);
+            return dialog;
+        }
+        return null;
+    }
+
+    /**
+     * 判断是否为数字
+     * @param str
+     * @return
+     */
+    public boolean isNumber(String str){
+        Pattern p = Pattern.compile("^?[0-9]*$|^?([0-9]*)\\.(\\d*)$");
+        Matcher isFloat = p.matcher(str);
+        if( !isFloat.matches()){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 设置时间选择
+     */
+    private void getDateTime(){
+        List<String> list = new ArrayList<>();
+        List<String> list1 = new ArrayList<>();
+        for (int i=0;i<5;i++){
+            list.add(String.valueOf(i));
+        }
+        for (int i=0;i<61;i++){
+            list1.add(String.valueOf(i));
+        }
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // 找到dialog的布局文件
+        View view = getLayoutInflater().inflate(R.layout.date_time_layout, null);
+        WheelView date = (WheelView) view.findViewById(R.id.date);
+        WheelView time = (WheelView) view.findViewById(R.id.time);
+        TextView cancel = (TextView) view.findViewById(R.id.cancel);
+        TextView sure = (TextView) view.findViewById(R.id.sure);
+        date.setOffset(2);
+        date.setItems(list);
+        date.setSeletion(1);
+        time.setOffset(2);
+        time.setItems(list1);
+        time.setSeletion(0);
+        curDate = list.get(1);
+        curTime = list1.get(0);
+        date.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
+            @Override
+            public void onSelected(int selectedIndex,
+                                   String item) {
+                curDate = item;
+            }
+        });
+
+        time.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
+            @Override
+            public void onSelected(int selectedIndex,
+                                   String item) {
+                curTime = item;
+            }
+        });
+
+        sure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor edit = preferences.edit();
+                if (curDate.equals("0")&&curTime.equals("0")){
+                    ToastUtil.showBottomShort(mContext,"选择的时间间隔不能0");
+                    return;
+                }
+                if (curDate.equals("0")&&!curTime.equals("0")){
+                    MyApplication.gpsTime = 1000*Integer.parseInt(curTime);
+                }
+                if (!curDate.equals("0")&&curTime.equals("0")){
+                    MyApplication.gpsTime = 1000*60*(Integer.parseInt(curDate));
+                }
+                if (!curDate.equals("0")&&!curTime.equals("0")){
+                    MyApplication.gpsTime = 1000*60*(Integer.parseInt(curDate))+1000*Integer.parseInt(curTime);
+                }
+                Log.e("result","gpsTimeMyself:"+MyApplication.gpsTime);
+                edit.putString("gpsTime",String.valueOf(MyApplication.gpsTime));
+                edit.commit();
+                mGpsTime.setText(MyApplication.gpsTime/1000+"秒");
+                dialog.dismiss();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        // 设置dialog的布局,并显示
+        dialog.setContentView(view);
+        dialog.show();
+    }
+
+}

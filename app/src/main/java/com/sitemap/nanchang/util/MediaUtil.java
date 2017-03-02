@@ -1,0 +1,114 @@
+package com.sitemap.nanchang.util;
+
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.provider.MediaStore;
+
+import com.sitemap.nanchang.model.DataType;
+
+import java.io.File;
+
+import it.sauronsoftware.jave.AudioAttributes;
+import it.sauronsoftware.jave.Encoder;
+import it.sauronsoftware.jave.EncoderException;
+import it.sauronsoftware.jave.EncodingAttributes;
+import it.sauronsoftware.jave.InputFormatException;
+
+/**
+ * 多媒体工具
+ * Created by chenhao on 2016/12/5.
+ */
+
+public class MediaUtil {
+    private static String[] filePathColumn;//查询字段
+    private static String sortOrder;//降序
+
+    /**
+     * 通过intent打开多媒体播放器
+     *
+     * @param context
+     * @param path
+     * @param type
+     */
+    public static MediaPlayer openMedia(Context context, String path, DataType type) {
+
+        switch (type) {
+            case IMG:
+                Intent itent = new Intent(Intent.ACTION_VIEW);
+                itent.setDataAndType(Uri.fromFile(new File(path)), "image/*");
+                context.startActivity(itent);
+                break;
+            case VIDEO:
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.parse(path), "video/*");
+                context.startActivity(intent);
+                break;
+            case VOICE:
+                MediaPlayer mMediaPlayer = null;
+                try {
+                    mMediaPlayer = new MediaPlayer();
+                    mMediaPlayer.setDataSource(path);
+                    mMediaPlayer.prepare();
+                    mMediaPlayer.start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return mMediaPlayer;
+            default:
+                break;
+        }
+        return null;
+    }
+
+    /**
+     * 将资源uri转化为绝对路径（图片、音频、视频）
+     *
+     * @param uri
+     * @return
+     */
+    public static String UriToPath(Context context, Uri uri, DataType type) {
+        if (uri == null) {
+            return null;
+        }
+        String scheme = uri.getScheme();//uri类型
+        if (scheme.equals("file")) {
+            String path = uri.getPath();
+            return path;
+        } else if (scheme.equals("content")) {
+            switch (type) {
+                case IMG:
+                    filePathColumn = new String[]{MediaStore.Images.Media.DATA};
+                    sortOrder = MediaStore.Images.Media.DATA + " DESC";
+                    break;
+                case VIDEO:
+                    filePathColumn = new String[]{MediaStore.Video.Media.DATA};
+                    sortOrder = MediaStore.Video.Media.DATA + " DESC";
+                    break;
+                case VOICE:
+                    filePathColumn = new String[]{MediaStore.Audio.Media.DATA};
+                    sortOrder = MediaStore.Audio.Media.DATA + " DESC";
+                    break;
+                default:
+                    break;
+            }
+
+            Cursor cursor = context.getContentResolver().query(uri,
+                    filePathColumn, null, null, sortOrder);
+
+            if (cursor == null) {
+                return null;
+            }
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            // 得到绝对路径
+            String filePath = cursor.getString(columnIndex);
+            cursor.close();
+            return filePath;
+        } else {
+            return null;
+        }
+    }
+}

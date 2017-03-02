@@ -1,0 +1,111 @@
+package com.sitemap.nanchang.activity;
+
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.sitemap.nanchang.R;
+import com.sitemap.nanchang.adapter.MyViewPagerAdapter;
+import com.sitemap.nanchang.application.MyApplication;
+import com.sitemap.nanchang.config.RequestCode;
+import com.sitemap.nanchang.fragments.ListFragment;
+import com.sitemap.nanchang.fragments.MapFragment;
+import com.sitemap.nanchang.fragments.PatchFragment;
+import com.sitemap.nanchang.util.FileUtil;
+import com.sitemap.nanchang.util.JsonUtil;
+import com.sitemap.nanchang.util.ToastUtil;
+import com.sitemap.nanchang.view.NoScrollViewPager;
+
+import java.io.File;
+import java.util.ArrayList;
+
+public class MainActivity extends BaseActivity implements View.OnClickListener{
+    public static MainActivity mContext;//本类
+    private ListFragment f1;// 第一个子页面 列表
+    private MapFragment f2;// 第二个子页面 地图
+    private PatchFragment f3;//采集点页面
+    private ArrayList<Fragment> mMenuList;// 子页面列表
+    private TextView renwu,map;//任务地图切换按钮
+    private NoScrollViewPager mViewPager;// ViewPager对象
+    private LinearLayout addTask;//增加任务按钮
+    private LinearLayout mMySelf;//我的页面
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        init();
+    }
+
+    private void init(){
+        mContext=this;
+        renwu=(TextView)findViewById(R.id.renwu);
+        renwu.setOnClickListener(this);
+        map=(TextView)findViewById(R.id.map);
+        map.setOnClickListener(this);
+        mViewPager=(NoScrollViewPager)findViewById(R.id.viewpager);
+        addTask = (LinearLayout) findViewById(R.id.add_task);
+        addTask.setOnClickListener(this);
+        mMySelf = (LinearLayout) findViewById(R.id.menu);
+        mMySelf.setOnClickListener(this);
+        f1=new ListFragment();
+        f2=new MapFragment();
+        f3 = new PatchFragment();
+        mMenuList = new ArrayList<Fragment>();
+        mMenuList.add(f1);
+//        mMenuList.add(f2);
+        mMenuList.add(f3);
+       mViewPager.setAdapter(new MyViewPagerAdapter(
+                getSupportFragmentManager(),mMenuList));
+        renwu.setSelected(true);
+
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v==renwu){
+            map.setSelected(false);
+            renwu.setSelected(true);
+            renwu.setTextColor(Color.parseColor("#ffffff"));
+            map.setTextColor(Color.parseColor("#333333"));
+            mViewPager.setCurrentItem(0);
+        }
+        if (v==map){
+            renwu.setSelected(false);
+            map.setSelected(true);
+            map.setTextColor(Color.parseColor("#ffffff"));
+            renwu.setTextColor(Color.parseColor("#333333"));
+            mViewPager.setCurrentItem(1);
+        }
+        if(v == addTask){//增加任务
+            if (mViewPager.getCurrentItem()==0){
+                Intent intent = new Intent(mContext,TaskDescActivity.class);
+                intent.putExtra("type",1);//增加任务 无压缩按钮
+                startActivity(intent);
+            }else{
+                Intent intent = new Intent(mContext,PatchDesActivity.class);
+                intent.putExtra("type",1);//增加采集点 无压缩按钮
+                startActivity(intent);
+            }
+
+        }
+        if (v == mMySelf){
+            Intent intent = new Intent(mContext,MySelfActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    /**
+     * 重置背景
+     */
+    private void  resetBottomBg(){
+        renwu.setSelected(false);
+        map.setSelected(false);
+    }
+}
